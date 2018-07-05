@@ -1,0 +1,7 @@
+ARG_ENABLE('l5_model', 'l5_model support', 'no');
+
+if (PHP_L5_MODEL != 'no') {
+	AC_DEFINE('HAVE_L5_MODEL', 1, 'l5_model support enabled');
+
+	EXTENSION('l5_model', 'l5_model.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
