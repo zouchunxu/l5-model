@@ -18,24 +18,6 @@ PHP_FUNCTION(l5_model_test1)
 }
 /* }}} */
 
-/* {{{ string l5_model_test2( [ string $var ] )
- */
-PHP_FUNCTION(l5_model_test2)
-{
-	char *var = "World";
-	size_t var_len = sizeof("World") - 1;
-	zend_string *retval;
-
-	ZEND_PARSE_PARAMETERS_START(0, 1)
-		Z_PARAM_OPTIONAL
-		Z_PARAM_STRING(var, var_len)
-	ZEND_PARSE_PARAMETERS_END();
-
-	retval = strpprintf(0, "Hello %s", var);
-
-	RETURN_STR(retval);
-}
-/* }}}*/
 
 /* {{{ PHP_RINIT_FUNCTION
  */
@@ -44,6 +26,16 @@ PHP_RINIT_FUNCTION(l5_model)
 #if defined(ZTS) && defined(COMPILE_DL_L5_MODEL)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+
+	return SUCCESS;
+}
+/* }}} */
+
+
+/* {{{ PHP_RINIT_FUNCTION
+ */
+PHP_MINIT_FUNCTION(l5_model)
+{
 
 	return SUCCESS;
 }
@@ -73,18 +65,23 @@ ZEND_END_ARG_INFO()
  */
 const zend_function_entry l5_model_functions[] = {
 	PHP_FE(l5_model_test1,		arginfo_l5_model_test1)
-	PHP_FE(l5_model_test2,		arginfo_l5_model_test2)
 	PHP_FE_END
 };
 /* }}} */
 
+static zend_module_dep php_mysqlnd_deps[] = {
+		ZEND_MODULE_REQUIRED("mysqlnd")
+		{NULL,NULL,NULL}
+};
+
 /* {{{ l5_model_module_entry
  */
 zend_module_entry l5_model_module_entry = {
-	STANDARD_MODULE_HEADER,
+	STANDARD_MODULE_HEADER_EX, NULL,
+	php_mysqlnd_deps,
 	"l5_model",					/* Extension name */
 	l5_model_functions,			/* zend_function_entry */
-	NULL,							/* PHP_MINIT - Module initialization */
+	PHP_MINIT(l5_model),							/* PHP_MINIT - Module initialization */
 	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(l5_model),			/* PHP_RINIT - Request initialization */
 	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
