@@ -7,6 +7,7 @@
 #include "php.h"
 #include "ext/standard/info.h"
 #include "php_l5_model.h"
+#include "model.h"
 
 /* {{{ void l5_model_test1()
  */
@@ -37,6 +38,7 @@ PHP_RINIT_FUNCTION(l5_model)
 PHP_MINIT_FUNCTION(l5_model)
 {
 
+    model_init();
 	return SUCCESS;
 }
 /* }}} */
@@ -69,9 +71,9 @@ const zend_function_entry l5_model_functions[] = {
 };
 /* }}} */
 
-static zend_module_dep php_mysqlnd_deps[] = {
-		ZEND_MODULE_REQUIRED("mysqlnd")
-		{NULL,NULL,NULL}
+static const zend_module_dep php_mysqlnd_deps[] = {
+        ZEND_MOD_REQUIRED("mysqlnd")
+        ZEND_MOD_END
 };
 
 /* {{{ l5_model_module_entry

@@ -7,11 +7,9 @@
 zend_class_entry *l5model_Model_class;
 
 
-void model_init()
+ZEND_METHOD(Model, __construct)
 {
-    zend_class_entry ce;
-    INIT_CLASS_ENTRY( ce, "Model", risk_funcs );
-    zcxtest_Model_class = zend_register_internal_class(&ce);
+return_value = getThis();
 }
 
 
@@ -43,8 +41,19 @@ ZEND_METHOD(Model,connect)
     return_value = getThis();
 }
 
+static const zend_function_entry model_funcs[] = {
+        PHP_ME(Model,			connect,        NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Model,			__construct,        NULL, ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
+        PHP_FE_END
+};
 
 
 
 
 
+void model_init()
+{
+    zend_class_entry ce;
+    INIT_CLASS_ENTRY( ce, "Model", model_funcs );
+    l5model_Model_class = zend_register_internal_class(&ce);
+}
