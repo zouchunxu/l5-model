@@ -38,6 +38,9 @@ ZEND_METHOD(Model,connect)
         return ;
     }
 
+
+
+
     return_value = getThis();
 }
 
