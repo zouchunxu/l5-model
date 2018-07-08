@@ -13,9 +13,41 @@
  */
 PHP_FUNCTION(l5_model_test1)
 {
-	ZEND_PARSE_PARAMETERS_NONE();
+	char * host;
+	int host_len;
 
-	php_printf("The extension %s is loaded and working!\r\n", "l5_model");
+	char * username;
+	int username_len;
+
+	char * password;
+	int password_len;
+
+	char * database;
+    int database_len;
+
+    zend_long port;
+
+	printf("num=%d\n",ZEND_NUM_ARGS());
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "ssssl",
+											   &host,&host_len,
+											   &username,&username_len,
+											   &password,&password_len,
+                                               &database,&database_len,
+                                                &port
+											 )
+			) {
+
+		return ;
+	}
+
+//
+//
+	php_printf("host=%s,host_len=%d\n",host, host_len);
+	php_printf("username=%s,username_len=%d\n",username, username_len);
+	php_printf("password=%s,password_len=%d\n",password, password_len);
+	php_printf("database=%s,database_len=%d\n",database, database_len);
+	php_printf("port=%d\n",port);
 }
 /* }}} */
 
@@ -55,7 +87,11 @@ PHP_MINFO_FUNCTION(l5_model)
 
 /* {{{ arginfo
  */
-ZEND_BEGIN_ARG_INFO(arginfo_l5_model_test1, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_l5_model_test1, 0, 0, 4)
+    ZEND_ARG_INFO(0, host)
+    ZEND_ARG_INFO(0, username)
+    ZEND_ARG_INFO(0, password)
+    ZEND_ARG_INFO(0, database)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_l5_model_test2, 0)
@@ -66,7 +102,7 @@ ZEND_END_ARG_INFO()
 /* {{{ l5_model_functions[]
  */
 const zend_function_entry l5_model_functions[] = {
-	PHP_FE(l5_model_test1,		arginfo_l5_model_test1)
+	PHP_FE(l5_model_test1,		NULL)
 	PHP_FE_END
 };
 /* }}} */
@@ -79,8 +115,9 @@ static const zend_module_dep php_mysqlnd_deps[] = {
 /* {{{ l5_model_module_entry
  */
 zend_module_entry l5_model_module_entry = {
-	STANDARD_MODULE_HEADER_EX, NULL,
-	php_mysqlnd_deps,
+    STANDARD_MODULE_HEADER,
+//	STANDARD_MODULE_HEADER_EX, NULL,
+//	php_mysqlnd_deps,
 	"l5_model",					/* Extension name */
 	l5_model_functions,			/* zend_function_entry */
 	PHP_MINIT(l5_model),							/* PHP_MINIT - Module initialization */

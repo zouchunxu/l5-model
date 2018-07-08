@@ -3,23 +3,25 @@
 #endif
 
 #include "php.h"
+#include "connect.h"
 
 zend_class_entry *l5model_Model_class;
 
 
-ZEND_METHOD(Model, __construct)
+PHP_METHOD(Model, __construct)
 {
-return_value = getThis();
+    return_value = getThis();
 }
 
 
-ZEND_METHOD(Model,connect)
+PHP_METHOD(Model,connect)
 {
+
     char * host;
     int host_len;
 
-    char * user_name;
-    int user_name_len;
+    char * username;
+    int username_len;
 
     char * password;
     int password_len;
@@ -27,22 +29,32 @@ ZEND_METHOD(Model,connect)
     char * database;
     int database_len;
 
+    zend_long port;
 
-    long int port;
+//    printf("num=%d\n",ZEND_NUM_ARGS());
 
+    if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "ssssl",
+    &host,&host_len,
+    &username,&username_len,
+    &password,&password_len,
+    &database,&database_len,
+    &port
+    )
+    ) {
 
-    if (SUCCESS != zend_parse_parameters(ZEND_NUM_ARGS(),"ssssl",
-        &host,&host_len,&user_name,&user_name_len,
-        &password,&password_len,&database,&database_len,&port)) {
-
-        return ;
+    return ;
     }
 
-
-
-
+//    php_printf("host=%s,host_len=%d\n",host, host_len);
+//    php_printf("username=%s,username_len=%d\n",username, username_len);
+//    php_printf("password=%s,password_len=%d\n",password, password_len);
+//    php_printf("database=%s,database_len=%d\n",database, database_len);
+//    php_printf("port=%d\n",port);
+    connect_list * clist = add_connect(host,username,password, database,3306);
     return_value = getThis();
 }
+
+
 
 static const zend_function_entry model_funcs[] = {
         PHP_ME(Model,			connect,        NULL, ZEND_ACC_PUBLIC)
