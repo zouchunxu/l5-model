@@ -29,27 +29,21 @@ PHP_FUNCTION(l5_model_test1)
 
 	printf("num=%d\n",ZEND_NUM_ARGS());
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "ssssl",
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss",
 											   &host,&host_len,
 											   &username,&username_len,
 											   &password,&password_len,
-                                               &database,&database_len,
-                                                &port
-											 )
-			) {
+                                               &database,&database_len)) {
 
 		return ;
 	}
-
-//
-//
-	php_printf("host=%s,host_len=%d\n",host, host_len);
-	php_printf("username=%s,username_len=%d\n",username, username_len);
-	php_printf("password=%s,password_len=%d\n",password, password_len);
-	php_printf("database=%s,database_len=%d\n",database, database_len);
-	php_printf("port=%d\n",port);
+    char  arr[255];
 }
 /* }}} */
+
+void testVar(char * str){
+    php_printf("test_var=%s\n",str);
+}
 
 
 /* {{{ PHP_RINIT_FUNCTION
@@ -102,7 +96,7 @@ ZEND_END_ARG_INFO()
 /* {{{ l5_model_functions[]
  */
 const zend_function_entry l5_model_functions[] = {
-	PHP_FE(l5_model_test1,		NULL)
+	PHP_FE(l5_model_test1,		arginfo_l5_model_test1)
 	PHP_FE_END
 };
 /* }}} */
@@ -115,9 +109,8 @@ static const zend_module_dep php_mysqlnd_deps[] = {
 /* {{{ l5_model_module_entry
  */
 zend_module_entry l5_model_module_entry = {
-    STANDARD_MODULE_HEADER,
-//	STANDARD_MODULE_HEADER_EX, NULL,
-//	php_mysqlnd_deps,
+	STANDARD_MODULE_HEADER_EX, NULL,
+	php_mysqlnd_deps,
 	"l5_model",					/* Extension name */
 	l5_model_functions,			/* zend_function_entry */
 	PHP_MINIT(l5_model),							/* PHP_MINIT - Module initialization */

@@ -3,6 +3,7 @@
 #endif
 
 #include "php.h"
+#include <stdarg.h>
 #include "ext/mysqlnd/mysqlnd.h"
 #include "ext/mysqlnd/mysqlnd_libmysql_compat.h"
 
@@ -27,3 +28,5 @@ void * find_connect(char * host,char * username);
 connect_list * add_connect(char * host,char * username,char * password,char * database,int port);
 
 int insert_user(MYSQLND * mysql,char * sql);
+
+int select_user(zval * ret,MYSQLND * mysql,char * sql,int sql_len);
