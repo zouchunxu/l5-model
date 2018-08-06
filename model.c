@@ -98,7 +98,7 @@ PHP_METHOD(Model,where)
     } else {
         zend_error(E_ERROR, "参数错误！");
     }
-
+    return_value = getThis();
 }
 
 
@@ -111,26 +111,67 @@ PHP_METHOD(Model,get)
     zend_string *str_key;
     zval *zv,*obj;
 
-    char * buf;
+    char * buf = NULL;
+    int first = 0;
+    int size = 0;
+    uint32_t count = zend_array_count(Z_ARRVAL_P(z));
 
     ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(z), num_key, str_key, zv) {
-        obj = zend_hash_index_find(Z_ARRVAL_P(zv),0);
-        int type = Z_TYPE_P(obj);
-        if(type == IS_ARRAY) {
+
+        obj = zend_hash_get_current_data(Z_ARRVAL_P(zv));
+        zend_string * obj_val = zval_get_string(obj);
+        zval  obj_key ;
+        int type = 0;
+        if(obj != NULL) {
+
+            type = Z_TYPE_P(obj);
+        }
+//        printf("type=%d\n",type);
+
+        zend_hash_get_current_key_zval(Z_ARRVAL_P(zv),&obj_key);
+//        printf("obj_key=%d\n",Z_TYPE(obj_key));
+
+
+        if(Z_TYPE(obj_key) == IS_STRING) {
             char tmp_buf[255000];
-            zval * l,r;
-            l =  zend_hash_index_find(Z_ARRVAL_P(obj),0);
-            r =  zend_hash_index_find(Z_ARRVAL_P(obj),1);
 
-            int wcnt = sprintf(tmp_buf,"%s = \"%s\"",Z_STRVAL_P(l),Z_STRVAL_P(r));
-            buf = erealloc(buf,wcnt);
-            strcat(buf,wcnt);
-
-
+            int wcnt = sprintf(tmp_buf,"`%s` = \"%s\"",Z_STRVAL(obj_key),ZSTR_VAL(obj_val));
+            size += wcnt;
+            buf = erealloc(buf,size);
+            if(first == 0){
+                strcpy(buf,tmp_buf);
+            } else {
+                strcat(buf,tmp_buf);
+            }
         } else if(type == IS_STRING) {
+
+            char tmp_buf[255000];
+            zval * r, * o;
+            o =  zend_hash_index_find(Z_ARRVAL_P(zv),1);
+            r =  zend_hash_index_find(Z_ARRVAL_P(zv),2);
+
+            int wcnt = sprintf(tmp_buf,"`%s` %s \"%s\"",Z_STRVAL_P(obj),Z_STRVAL_P(o),Z_STRVAL_P(r));
+            size += wcnt;
+            buf = erealloc(buf,size);
+            if(first == 0){
+                strcpy(buf,tmp_buf);
+            } else {
+                strcat(buf,tmp_buf);
+            }
+
+        } else {
 
         }
 
+        first++;
+        if(first < count) {
+            size += sizeof(" and \0")-1;
+            buf = erealloc(buf,size);
+            strcat(buf," and \0");
+
+        }
+
+//        printf("%s\n",buf);
 
     } ZEND_HASH_FOREACH_END();
 }
